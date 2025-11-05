@@ -1,4 +1,4 @@
-// File: src/App.tsx
+ 
 import React, { useMemo, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -43,30 +43,30 @@ export default function App() {
   const rows = useSelector((s: RootState) => s.data.rows);
   const columns = useSelector((s: RootState) => s.columns.columns);
 
-  // UI state
+   
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
-  const [rowsPerPage] = useState(5); // CHANGED: rows per page set to 5 as requested
+  const [rowsPerPage] = useState(5);  
   const [manageOpen, setManageOpen] = useState(false);
   const [importErrors, setImportErrors] = useState<string[] | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editCache, setEditCache] = useState<Record<string, any>>({});
 
-  // sorting
+   
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
-  // theme toggle (light / dark)
-  const [themeMode, setThemeMode] = useState<"light" | "dark">("light"); // CHANGED: added theme toggle state
+   
+  const [themeMode, setThemeMode] = useState<"light" | "dark">("light");  
   const theme = useMemo(
     () => createTheme({ palette: { mode: themeMode } }),
     [themeMode]
   );
 
-  // responsive
+   
   const isSmall = useMediaQuery("(max-width:600px)");
 
-  // column reordering drag index
+   
   const [dragColIndex, setDragColIndex] = useState<number | null>(null);
 
   const visibleCols = useMemo(
@@ -74,19 +74,19 @@ export default function App() {
     [columns]
   );
 
-  // FETCH DATA FROM JSONPLACEHOLDER and save into state
+   
   useEffect(() => {
-    // CHANGED: Fetching user data from jsonplaceholder.typicode.com/users and saving into Redux state
-    // We map the received user objects to our RowData shape and add simple defaults for missing fields.
+     
+     
     async function fetchUsers() {
       try {
-        const res = await fetch("https://jsonplaceholder.typicode.com/users");
+        const res = await fetch("https://jsonplaceholder.typicode.com/users")
         const data = await res.json();
         const mapped: RowData[] = data.map((u: any, i: number) => ({
           id: String(u.id),
           name: u.name || u.username || `User ${i + 1}`,
           email: u.email || `user${i + 1}@example.com`,
-          age: Math.floor(Math.random() * 43) + 18, // random age 18-60
+          age: Math.floor(Math.random() * 43) + 18,  
           role: "Viewer",
           phone: u.phone,
           website: u.website,
@@ -101,7 +101,7 @@ export default function App() {
     fetchUsers();
   }, [dispatch]);
 
-  // filtering & sorting
+   
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     let data = rows.filter((r) => {
@@ -113,7 +113,7 @@ export default function App() {
         const av = (a as any)[sortKey];
         const bv = (b as any)[sortKey];
         if (av === bv) return 0;
-        // handle undefined gracefully
+         
         if (av == null) return sortDir === "asc" ? -1 : 1;
         if (bv == null) return sortDir === "asc" ? 1 : -1;
         const res = av > bv ? 1 : -1;
@@ -128,7 +128,7 @@ export default function App() {
     [filtered, page, rowsPerPage]
   );
 
-  // handlers
+   
   function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -172,7 +172,6 @@ export default function App() {
     setEditCache({});
   }
 
-  // CHANGED: column header click sort handler (sorting for each column header)
   function handleHeaderSort(key: string) {
     if (sortKey === key) {
       setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
@@ -182,7 +181,6 @@ export default function App() {
     }
   }
 
-  // CHANGED: drag & drop handlers to reorder columns
   function onDragStart(e: React.DragEvent, index: number) {
     setDragColIndex(index);
     e.dataTransfer.effectAllowed = "move";
@@ -197,12 +195,12 @@ export default function App() {
     const newCols = [...columns];
     const [moved] = newCols.splice(dragColIndex, 1);
     newCols.splice(index, 0, moved);
-    dispatch(setColumns(newCols)); // persist new order
+    dispatch(setColumns(newCols)); 
     setDragColIndex(null);
   }
 
   return (
-    // CHANGED: ThemeProvider added here so user can toggle light/dark without changing main.tsx
+     
     <ThemeProvider theme={theme}>
       <Container sx={{ mt: 4, maxWidth: "xl" }}>
         <Paper sx={{ p: 2, mb: 2, boxShadow: 3 }}>
@@ -262,7 +260,7 @@ export default function App() {
                     onDragStart={(e) => onDragStart(e, idx)}
                     onDragOver={onDragOver}
                     onDrop={(e) => onDrop(e, idx)}
-                    onClick={() => handleHeaderSort(col.key)} // CHANGED: make header clickable for sorting
+                    onClick={() => handleHeaderSort(col.key)}  
                     sx={{
                       cursor: "pointer",
                       userSelect: "none",
